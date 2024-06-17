@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #8fe6f1; 
+        }
+        .container {
+            max-width: 100%;
+            background-color: #73e79f; 
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+            margin: 20px auto;
+        }
+    
+        p {
+            font-size: 18px;
+        }
+        #map {
+            height: 600px;
+            width: 800px;
+            margin-top: 20px;
+            border: 1px solid #92eec3;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .btn-back {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #89add6;
+            font-size: 16px;
+            text-decoration: none;
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+      
+        <h1>{{ algoritmo }}</h1>
+        <h2>Distancia Total</h2>
+        <p>{{ distancia_total }} KM</p>
+        <div id="map"></div>
+
+
+    </div>
+    <script>
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 5,
+                center: { lat: 19.432608, lng: -99.133209 }
+            });
+
+            var routeCoords = [
+                {% for coord in coordenadas_ruta %}
+                { lat: {{ coord[0] }}, lng: {{ coord[1] }} },
+                {% endfor %}
+            ];
+
+            var routePath = new google.maps.Polyline({
+                path: routeCoords,
+                geodesic: true,
+                strokeColor: '#28a745', 
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+
+            routePath.setMap(map);
+            var startMarker = new google.maps.Marker({
+                position: { lat: {{ coordenadas_ruta[0][0] }}, lng: {{ coordenadas_ruta[0][1] }} },
+                map: map,
+                title: 'Inicio: {{ start_city }}',
+                icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+            });
+
+            var endMarker = new google.maps.Marker({
+                position: { lat: {{ coordenadas_ruta[-1][0] }}, lng: {{ coordenadas_ruta[-1][1] }} },
+                map: map,
+                title: 'Fin: {{ end_city }}',
+                icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+            });
+        }
+    </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCam3lOPAbVGyIJjiH4riffoByve1oQyOw&callback=initMap" async defer></script>
+</body>
+</html>
